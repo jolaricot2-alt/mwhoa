@@ -51,7 +51,7 @@
                         <ul class="text-sm text-slate-600 space-y-3 leading-relaxed">
                             <li>• Suggestions must pertain to Montgomery Woods common areas.</li>
                             <li>• No personal grievances or neighbor disputes.</li>
-                            <li>• All ideas are subject to HOA Board review and 2026 financial assessments.</li>
+                            <li>• All ideas are subject to HOA Board review and financial assessments.</li>
                             <li>• Keep discussions constructive and neighborly.</li>
                         </ul>
                     </div>
@@ -59,7 +59,7 @@
                     <div class="p-6 budget-box rounded-2xl shadow-lg">
                         <h3 class="font-bold mb-2 text-sm uppercase tracking-wider text-white">Budgeting Context</h3>
                         <p class="text-xs text-white opacity-90 leading-relaxed">
-                            Projects are evaluated based on the current tax year financial planning and Montgomery Woods community priorities.
+                            Projects are evaluated based on community priorities and ongoing financial planning.
                         </p>
                     </div>
                 </div>
@@ -70,7 +70,6 @@
                 <section class="bg-white rounded-2xl p-8 mb-12 shadow-xl border-t-4 border-mw-green relative">
                     <h2 class="text-xl font-bold text-mw-green mb-6">Submit a Proposal</h2>
                     
-                    <!-- Success Notification -->
                     <transition name="fade">
                         <div v-if="showSuccess" class="absolute top-4 right-8 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg text-sm font-bold border border-emerald-200 shadow-sm">
                             ✓ Idea Posted Successfully
@@ -114,7 +113,6 @@
                         <div class="flex-1">
                             <div class="flex flex-wrap gap-2 mb-2">
                                 <span class="category-tag px-2 py-1 rounded-md uppercase tracking-wider">{{ idea.category || 'Others' }}</span>
-                                <!-- Status Badge: Hidden for non-admins unless it's NOT the default status -->
                                 <span v-if="idea.status && idea.status !== 'Under Board Review'" :class="getStatusClass(idea.status)" class="status-badge px-2 py-1 rounded-md border">
                                     {{ idea.status }}
                                 </span>
