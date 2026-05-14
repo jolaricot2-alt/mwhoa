@@ -1,841 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>HOA Neighborhood Ideas Board</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --navy: #1a2744;
-    --navy-light: #243258;
-    --cream: #f8f4ee;
-    --cream-dark: #ede8e0;
-    --gold: #c9973a;
-    --gold-light: #e8b85a;
-    --green: #2d6a4f;
-    --green-light: #40916c;
-    --red: #c1440e;
-    --red-light: #e05a24;
-    --text: #1a2744;
-    --text-soft: #4a5568;
-    --white: #ffffff;
-    --shadow: 0 4px 24px rgba(26,39,68,0.10);
-    --shadow-lg: 0 8px 40px rgba(26,39,68,0.16);
-  }
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  /* ── Header ── */
-  .header {
-    background: var(--navy);
-    color: var(--white);
-    padding: 0 24px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.25);
-  }
-  .header-inner {
-    max-width: 860px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    gap: 16px;
-  }
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .header-icon {
-    width: 36px;
-    height: 36px;
-    background: var(--gold);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-  .header-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    letter-spacing: 0.01em;
-    line-height: 1.2;
-  }
-  .header-sub {
-    font-size: 11px;
-    color: rgba(255,255,255,0.55);
-    font-weight: 300;
-    letter-spacing: 0.04em;
-  }
-  .header-count {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.18);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-    color: rgba(255,255,255,0.85);
-  }
-
-  /* ── Hero band ── */
-  .hero {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    padding: 40px 24px 0;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 70% 50%, rgba(201,151,58,0.15), transparent 60%);
-  }
-  .hero-inner {
-    max-width: 860px;
-    margin: 0 auto;
-    position: relative;
-  }
-  .hero-eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    font-weight: 500;
-    margin-bottom: 10px;
-  }
-  .hero-heading {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(28px, 5vw, 44px);
-    color: var(--white);
-    line-height: 1.15;
-    margin-bottom: 12px;
-  }
-  .hero-heading em {
-    font-style: italic;
-    color: var(--gold-light);
-  }
-  .hero-desc {
-    color: rgba(255,255,255,0.65);
-    font-size: 15px;
-    font-weight: 300;
-    max-width: 520px;
-    line-height: 1.6;
-    margin-bottom: 32px;
-  }
-
-  /* ── Compose card (sits at bottom of hero, overlapping) ── */
-  .compose-wrapper {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 24px;
-    transform: translateY(-1px);
-  }
-  .compose {
-    background: var(--white);
-    border-radius: 16px 16px 0 0;
-    box-shadow: var(--shadow-lg);
-    padding: 28px 28px 24px;
-    border: 1px solid rgba(26,39,68,0.08);
-    border-bottom: none;
-  }
-  .compose-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .compose-header-dot {
-    width: 8px; height: 8px;
-    background: var(--gold);
-    border-radius: 50%;
-  }
-  .compose-header-label {
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 600;
-    color: var(--text-soft);
-  }
-  .compose-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-  .compose-grid .full { grid-column: 1 / -1; }
-  .field-wrap { display: flex; flex-direction: column; gap: 5px; }
-  .field-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-soft);
-  }
-  .field-input, .field-textarea {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--text);
-    background: var(--cream);
-    border: 1.5px solid transparent;
-    border-radius: 8px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color 0.2s, background 0.2s;
-    width: 100%;
-    resize: none;
-  }
-  .field-input::placeholder, .field-textarea::placeholder { color: #a0aec0; }
-  .field-input:focus, .field-textarea:focus {
-    border-color: var(--navy);
-    background: var(--white);
-  }
-  .field-textarea { min-height: 80px; line-height: 1.5; }
-  .compose-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .compose-note {
-    font-size: 12px;
-    color: var(--text-soft);
-    font-style: italic;
-  }
-  .btn-submit {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    background: var(--navy);
-    color: var(--white);
-    border: none;
-    border-radius: 8px;
-    padding: 11px 24px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 2px 8px rgba(26,39,68,0.25);
-  }
-  .btn-submit:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,39,68,0.3); }
-  .btn-submit:active { transform: translateY(0); }
-  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  /* ── Main content ── */
-  .main {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
-  /* ── Toolbar ── */
-  .toolbar {
-    background: var(--white);
-    border: 1px solid rgba(26,39,68,0.08);
-    border-top: none;
-    border-radius: 0 0 16px 16px;
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .toolbar-left {
-    font-size: 13px;
-    color: var(--text-soft);
-    font-weight: 400;
-  }
-  .toolbar-left strong { color: var(--text); font-weight: 600; }
-  .sort-group {
-    display: flex;
-    gap: 4px;
-    background: var(--cream);
-    border-radius: 8px;
-    padding: 3px;
-  }
-  .sort-btn {
-    background: none;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-soft);
-    padding: 5px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .sort-btn:hover { color: var(--text); }
-  .sort-btn.active {
-    background: var(--navy);
-    color: var(--white);
-  }
-
-  /* ── Ideas ── */
-  .ideas-list { display: flex; flex-direction: column; gap: 12px; }
-
-  .idea-card {
-    background: var(--white);
-    border: 1px solid rgba(26,39,68,0.08);
-    border-radius: 12px;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: 68px 1fr;
-    gap: 16px;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    animation: fadeUp 0.3s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .idea-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-    border-color: rgba(26,39,68,0.14);
-  }
-  .idea-card.top-idea {
-    border-color: var(--gold);
-    background: linear-gradient(135deg, #fffbf3, var(--white));
-  }
-
-  /* Vote column */
-  .vote-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding-top: 2px;
-  }
-  .vote-btn {
-    width: 40px;
-    height: 36px;
-    border-radius: 8px;
-    border: 1.5px solid var(--cream-dark);
-    background: var(--cream);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    color: var(--text-soft);
-    transition: all 0.15s;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .vote-btn:hover { border-color: var(--navy); color: var(--navy); background: rgba(26,39,68,0.06); }
-  .vote-btn.up.voted { background: var(--green); border-color: var(--green); color: var(--white); }
-  .vote-btn.down.voted { background: var(--red); border-color: var(--red); color: var(--white); }
-
-  .vote-score {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    line-height: 1;
-    color: var(--text);
-    text-align: center;
-    min-width: 36px;
-  }
-  .vote-score.pos { color: var(--green); }
-  .vote-score.neg { color: var(--red); }
-
-  /* Idea body */
-  .idea-body { min-width: 0; }
-  .idea-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 7px;
-  }
-  .badge-top {
-    background: var(--gold);
-    color: var(--white);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 4px;
-  }
-  .meta-time {
-    font-size: 11px;
-    color: var(--text-soft);
-    font-weight: 300;
-  }
-  .idea-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 19px;
-    line-height: 1.25;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .idea-desc {
-    font-size: 14px;
-    color: var(--text-soft);
-    line-height: 1.55;
-    margin-bottom: 10px;
-  }
-  .idea-author {
-    font-size: 12px;
-    color: #a0aec0;
-    font-style: italic;
-  }
-  .idea-stats {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-  }
-  .stat { font-size: 11px; color: #a0aec0; display: flex; align-items: center; gap: 4px; }
-  .stat .dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0.5; }
-
-  /* ── Empty / loading ── */
-  .state-msg {
-    text-align: center;
-    padding: 60px 24px;
-    color: var(--text-soft);
-  }
-  .state-icon { font-size: 36px; margin-bottom: 14px; }
-  .state-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
-  .state-sub { font-size: 14px; line-height: 1.6; }
-
-  /* ── Toast ── */
-  .toast {
-    position: fixed;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%) translateY(12px);
-    background: var(--navy);
-    color: var(--white);
-    padding: 12px 22px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 500;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s, transform 0.25s;
-    z-index: 999;
-    white-space: nowrap;
-    box-shadow: var(--shadow-lg);
-  }
-  .toast.success { background: var(--green); }
-  .toast.error { background: var(--red); }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* ── Responsive ── */
-  @media (max-width: 560px) {
-    .header-sub { display: none; }
-    .compose { padding: 20px 18px 18px; }
-    .compose-grid { grid-template-columns: 1fr; }
-    .compose-grid .full { grid-column: 1; }
-    .idea-card { grid-template-columns: 56px 1fr; gap: 12px; padding: 16px; }
-    .vote-btn { width: 36px; height: 32px; }
-    .vote-score { font-size: 18px; }
-    .idea-title { font-size: 17px; }
-    .hero { padding: 28px 20px 0; }
-    .compose-wrapper { padding: 0 20px; }
-    .main { padding: 0 20px 60px; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOA Community Ideas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .idea-card { transition: all 0.2s ease; }
+        .idea-card:hover { transform: translateY(-2px); }
+        .vote-btn { transition: all 0.1s ease; }
+        .vote-btn:active { transform: scale(0.9); }
+        [v-cloak] { display: none; }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen font-sans text-slate-900">
+    <div id="app" v-cloak class="max-w-3xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold text-slate-900 mb-2">Community Ideas</h1>
+            <p class="text-slate-600">Share and vote on improvements for our HOA</p>
+        </header>
 
-<!-- Header -->
-<header class="header">
-  <div class="header-inner">
-    <div class="header-logo">
-      <div class="header-icon">🏘️</div>
-      <div>
-        <div class="header-title">Neighborhood Ideas</div>
-        <div class="header-sub">HOA Community Board</div>
-      </div>
-    </div>
-    <div class="header-count" id="headerCount">Loading…</div>
-  </div>
-</header>
+        <!-- Post Idea Form -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-10">
+            <h2 class="text-xl font-semibold mb-4">Post a New Idea</h2>
+            <form @submit.prevent="postIdea" class="space-y-4">
+                <div>
+                    <input v-model="newIdea.title" type="text" placeholder="Idea title (e.g., New pool furniture)" 
+                           class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                </div>
+                <div>
+                    <textarea v-model="newIdea.description" placeholder="Details (optional)" rows="3"
+                              class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 items-center">
+                    <input v-model="newIdea.author" type="text" placeholder="Your name (optional)" 
+                           class="w-full sm:w-auto flex-1 px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <button type="submit" :disabled="submitting" 
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2 rounded-lg disabled:opacity-50">
+                        {{ submitting ? 'Posting...' : 'Post Idea' }}
+                    </button>
+                </div>
+                <p v-if="error" class="text-red-500 text-sm mt-2">⚠️ {{ error }}</p>
+            </form>
+        </section>
 
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-eyebrow">Community Voice</div>
-    <h1 class="hero-heading">Share your ideas,<br><em>shape our neighborhood.</em></h1>
-    <p class="hero-desc">Post an idea, vote on your neighbors' suggestions, and let the best rise to the top. Every voice counts.</p>
-  </div>
-</div>
+        <!-- Filters & Sorting -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">{{ sortedIdeas.length }} Ideas</h2>
+            <select v-model="sortBy" class="bg-transparent font-medium text-slate-600 outline-none cursor-pointer">
+                <option value="top">Sort by: Top Rated</option>
+                <option value="newest">Sort by: Newest</option>
+                <option value="oldest">Sort by: Oldest</option>
+            </select>
+        </div>
 
-<!-- Compose card -->
-<div class="compose-wrapper">
-  <div class="compose">
-    <div class="compose-header">
-      <div class="compose-header-dot"></div>
-      <div class="compose-header-label">Submit a new idea</div>
-    </div>
-    <div class="compose-grid">
-      <div class="field-wrap full">
-        <label class="field-label" for="f-title">Idea Title <span style="color:var(--red)">*</span></label>
-        <input class="field-input" id="f-title" type="text" maxlength="120" placeholder="e.g., Add a dog waste station near the park" />
-      </div>
-      <div class="field-wrap full">
-        <label class="field-label" for="f-desc">Details (optional)</label>
-        <textarea class="field-textarea" id="f-desc" maxlength="800" placeholder="Why is this a good idea? Any specifics to share?"></textarea>
-      </div>
-      <div class="field-wrap">
-        <label class="field-label" for="f-author">Your Name (optional)</label>
-        <input class="field-input" id="f-author" type="text" maxlength="60" placeholder="Anonymous" />
-      </div>
-    </div>
-    <div class="compose-footer">
-      <span class="compose-note">Visible to all neighbors with the link.</span>
-      <button class="btn-submit" id="submitBtn">
-        <span>Post Idea</span>
-        <span>→</span>
-      </button>
-    </div>
-  </div>
-</div>
+        <!-- Ideas List -->
+        <div class="space-y-4">
+            <div v-for="(idea, index) in sortedIdeas" :key="idea.id" 
+                 class="idea-card bg-white p-5 rounded-xl shadow-sm border border-slate-200 flex gap-4">
+                
+                <!-- Vote Column -->
+                <div class="flex flex-col items-center gap-1 min-w-[40px]">
+                    <button @click="vote(idea.id, 1)" 
+                            :class="getUserVote(idea.id) === 1 ? 'text-orange-500' : 'text-slate-400 hover:text-slate-600'"
+                            class="vote-btn p-1">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/></svg>
+                    </button>
+                    <span class="font-bold text-lg" :class="{'text-orange-600': (idea.upvotes - idea.downvotes) > 0}">
+                        {{ idea.upvotes - idea.downvotes }}
+                    </span>
+                    <button @click="vote(idea.id, -1)" 
+                            :class="getUserVote(idea.id) === -1 ? 'text-blue-500' : 'text-slate-400 hover:text-slate-600'"
+                            class="vote-btn p-1">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5H7z"/></svg>
+                    </button>
+                </div>
 
-<!-- Toolbar + Ideas -->
-<main class="main">
-  <div class="toolbar">
-    <div class="toolbar-left" id="toolbarLabel">Loading ideas…</div>
-    <div class="sort-group">
-      <button class="sort-btn active" data-sort="top">Top</button>
-      <button class="sort-btn" data-sort="new">Newest</button>
-      <button class="sort-btn" data-sort="old">Oldest</button>
-    </div>
-  </div>
-
-  <div class="ideas-list" id="ideasList">
-    <div class="state-msg">
-      <div class="state-icon">⏳</div>
-      <div class="state-title">Loading…</div>
-      <div class="state-sub">Fetching your community's ideas.</div>
-    </div>
-  </div>
-</main>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<script>
-  // ── Config ──────────────────────────────────────────────
-  const SUPABASE_URL = 'https://sizisvestkynuftyclzgb.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpemlzdmVza3ludWZ0eWNsemdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTU0MzIsImV4cCI6MjA5MzkzMTQzMn0.v4eeorP97VcJP_GOizGdyoCJBRTVK4b06wJ7EEM1oFg';
-  const API = SUPABASE_URL + '/rest/v1/ideas';
-
-  function sbHeaders(extra) {
-    return Object.assign({
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Content-Type': 'application/json'
-    }, extra || {});
-  }
-
-  // ── State ───────────────────────────────────────────────
-  let ideas = [];
-  let myVotes = {}; // { id: 'up' | 'down' }
-  let sort = 'top';
-  const VOTES_KEY = 'hoa_my_votes_v1';
-
-  // ── Supabase helpers (plain fetch, no SDK) ────────────────
-  async function loadIdeas() {
-    const res = await fetch(API + '?select=*&order=created_at.desc', {
-      method: 'GET',
-      headers: sbHeaders()
-    });
-    if (!res.ok) throw new Error(await res.text());
-    ideas = await res.json();
-  }
-
-  async function insertIdea(idea) {
-    const res = await fetch(API + '?select=*', {
-      method: 'POST',
-      headers: sbHeaders({ 'Prefer': 'return=representation' }),
-      body: JSON.stringify(idea)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    const rows = await res.json();
-    return rows[0];
-  }
-
-  async function updateVotes(id, upvotes, downvotes) {
-    const res = await fetch(API + '?id=eq.' + id, {
-      method: 'PATCH',
-      headers: sbHeaders({ 'Prefer': 'return=minimal' }),
-      body: JSON.stringify({ upvotes, downvotes })
-    });
-    if (!res.ok) throw new Error(await res.text());
-  }
-
-  // ── Local vote persistence ───────────────────────────────
-  function loadMyVotes() {
-    try { myVotes = JSON.parse(localStorage.getItem(VOTES_KEY) || '{}'); }
-    catch { myVotes = {}; }
-  }
-  function saveMyVotes() {
-    try { localStorage.setItem(VOTES_KEY, JSON.stringify(myVotes)); }
-    catch {}
-  }
-
-  // ── Toast ────────────────────────────────────────────────
-  let toastTimer;
-  function toast(msg, type = '') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'toast show ' + type;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.className = 'toast', 2400);
-  }
-
-  // ── Helpers ──────────────────────────────────────────────
-  function esc(s) {
-    return String(s || '').replace(/[&<>"']/g, c =>
-      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-  }
-  function timeAgo(ts) {
-    const s = Math.floor((Date.now() - new Date(ts)) / 1000);
-    if (s < 60) return 'just now';
-    const m = Math.floor(s / 60);
-    if (m < 60) return m + 'm ago';
-    const h = Math.floor(m / 60);
-    if (h < 24) return h + 'h ago';
-    const d = Math.floor(h / 24);
-    if (d < 30) return d + 'd ago';
-    return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  function sorted(list) {
-    const copy = [...list];
-    if (sort === 'top') {
-      copy.sort((a, b) => {
-        const sa = (a.upvotes||0) - (a.downvotes||0);
-        const sb = (b.upvotes||0) - (b.downvotes||0);
-        return sb - sa || new Date(b.created_at) - new Date(a.created_at);
-      });
-    } else if (sort === 'new') {
-      copy.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    } else {
-      copy.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    }
-    return copy;
-  }
-
-  // ── Render ───────────────────────────────────────────────
-  function render() {
-    const n = ideas.length;
-    document.getElementById('headerCount').textContent = n + ' Idea' + (n !== 1 ? 's' : '');
-    document.getElementById('toolbarLabel').innerHTML =
-      n === 0 ? 'No ideas yet — be the first!'
-      : `<strong>${n}</strong> idea${n !== 1 ? 's' : ''} from your neighbors`;
-
-    const list = document.getElementById('ideasList');
-    if (n === 0) {
-      list.innerHTML = `
-        <div class="state-msg">
-          <div class="state-icon">💡</div>
-          <div class="state-title">The board is open</div>
-          <div class="state-sub">No ideas yet. Share the first one above and get the conversation started!</div>
-        </div>`;
-      return;
-    }
-
-    // Find top-scoring idea for badge
-    let topId = null;
-    if (n >= 2) {
-      let best = -Infinity;
-      for (const i of ideas) {
-        const s = (i.upvotes||0) - (i.downvotes||0);
-        if (s > best && s > 0) { best = s; topId = i.id; }
-      }
-    }
-
-    list.innerHTML = sorted(ideas).map((idea, idx) => {
-      const score = (idea.upvotes||0) - (idea.downvotes||0);
-      const scoreClass = score > 0 ? 'pos' : score < 0 ? 'neg' : '';
-      const myVote = myVotes[idea.id] || null;
-      const isTop = idea.id === topId;
-      const author = idea.author && idea.author.trim() ? idea.author : 'Anonymous Neighbor';
-      const delay = Math.min(idx * 40, 200);
-
-      return `
-        <div class="idea-card ${isTop ? 'top-idea' : ''}" style="animation-delay:${delay}ms" data-id="${idea.id}">
-          <div class="vote-col">
-            <button class="vote-btn up ${myVote === 'up' ? 'voted' : ''}" data-action="up" title="Upvote">▲</button>
-            <div class="vote-score ${scoreClass}">${score > 0 ? '+' : ''}${score}</div>
-            <button class="vote-btn down ${myVote === 'down' ? 'voted' : ''}" data-action="down" title="Downvote">▼</button>
-          </div>
-          <div class="idea-body">
-            <div class="idea-meta">
-              ${isTop ? '<span class="badge-top">★ Top Idea</span>' : ''}
-              <span class="meta-time">${timeAgo(idea.created_at)}</span>
+                <!-- Content Column -->
+                <div class="flex-1">
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <h3 class="text-lg font-bold leading-tight">{{ idea.title }}</h3>
+                        <span v-if="index === 0 && sortBy === 'top' && (idea.upvotes - idea.downvotes) > 0" 
+                              class="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap">
+                            ★ Top Notion
+                        </span>
+                    </div>
+                    <p class="text-slate-600 mb-3 whitespace-pre-wrap">{{ idea.description }}</p>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <span class="font-medium text-slate-500">{{ idea.author || 'Anonymous' }}</span>
+                        <span>•</span>
+                        <span>{{ formatDate(idea.created_at) }}</span>
+                    </div>
+                </div>
             </div>
-            <div class="idea-title">${esc(idea.title)}</div>
-            ${idea.description ? `<div class="idea-desc">${esc(idea.description)}</div>` : ''}
-            <div class="idea-author">— ${esc(author)}</div>
-            <div class="idea-stats">
-              <span class="stat">▲ ${idea.upvotes||0} up</span>
-              <span class="stat"><span class="dot"></span></span>
-              <span class="stat">▼ ${idea.downvotes||0} down</span>
+
+            <!-- Empty State -->
+            <div v-if="ideas.length === 0 && !loading" class="text-center py-20 bg-white rounded-xl border-2 border-dashed border-slate-200">
+                <p class="text-slate-400">No ideas yet. Be the first to post!</p>
             </div>
-          </div>
-        </div>`;
-    }).join('');
-  }
+        </div>
+    </div>
 
-  // ── Vote handler ─────────────────────────────────────────
-  async function handleVote(ideaId, dir) {
-    const idea = ideas.find(i => i.id === ideaId);
-    if (!idea) return;
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
 
-    const prev = myVotes[ideaId] || null;
-    let { upvotes, downvotes } = idea;
-    upvotes = upvotes || 0;
-    downvotes = downvotes || 0;
+        createApp({
+            setup() {
+                const SUPABASE_URL = 'https://sizisveskynuftyclzgb.supabase.co';
+                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpemlzdmVza3ludWZ0eWNsemdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTU0MzIsImV4cCI6MjA5MzkzMTQzMn0.v4eeorP97VcJP_GOizGdyoCJBRTVK4b06wJ7EEM1oFg';
+                
+                const ideas = ref([]);
+                const loading = ref(true);
+                const submitting = ref(false);
+                const error = ref(null);
+                const sortBy = ref('top');
+                const userVotes = ref(JSON.parse(localStorage.getItem('hoa_votes') || '{}'));
+                const newIdea = ref({ title: '', description: '', author: '' });
 
-    // Undo previous
-    if (prev === 'up') upvotes = Math.max(0, upvotes - 1);
-    if (prev === 'down') downvotes = Math.max(0, downvotes - 1);
+                const headers = {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                };
 
-    // Apply new
-    let newVote = null;
-    if (prev !== dir) {
-      newVote = dir;
-      if (dir === 'up') upvotes++;
-      if (dir === 'down') downvotes++;
-    }
+                const fetchIdeas = async () => {
+                    try {
+                        const response = await fetch(`${SUPABASE_URL}/rest/v1/ideas?select=*`, { headers });
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        ideas.ref = await response.json();
+                        ideas.value = ideas.ref;
+                    } catch (err) {
+                        error.value = "Couldn't connect to the database.";
+                        console.error(err);
+                    } finally {
+                        loading.ref = false;
+                    }
+                };
 
-    idea.upvotes = upvotes;
-    idea.downvotes = downvotes;
-    if (newVote) myVotes[ideaId] = newVote;
-    else delete myVotes[ideaId];
+                const postIdea = async () => {
+                    submitting.value = true;
+                    error.value = null;
+                    try {
+                        const response = await fetch(`${SUPABASE_URL}/rest/v1/ideas`, {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify({
+                                title: newIdea.value.title,
+                                description: newIdea.value.description,
+                                author: newIdea.value.author,
+                                upvotes: 0,
+                                downvotes: 0
+                            })
+                        });
+                        if (!response.ok) throw new Error('Failed to post');
+                        newIdea.value = { title: '', description: '', author: '' };
+                        await fetchIdeas();
+                    } catch (err) {
+                        error.value = "Failed to post. Check your connection.";
+                    } finally {
+                        submitting.value = false;
+                    }
+                };
 
-    saveMyVotes();
-    render();
+                const vote = async (id, direction) => {
+                    const currentVote = userVotes.value[id] || 0;
+                    let newUpStep = 0;
+                    let newDownStep = 0;
 
-    try {
-      await updateVotes(ideaId, upvotes, downvotes);
-    } catch (e) {
-      toast('Vote could not be saved — check your connection', 'error');
-    }
-  }
+                    if (currentVote === direction) {
+                        direction === 1 ? newUpStep = -1 : newDownStep = -1;
+                        delete userVotes.value[id];
+                    } else {
+                        if (currentVote === 1) newUpStep = -1;
+                        if (currentVote === -1) newDownStep = -1;
+                        direction === 1 ? newUpStep += 1 : newDownStep += 1;
+                        userVotes.value[id] = direction;
+                    }
 
-  // ── Submit handler ───────────────────────────────────────
-  async function handleSubmit() {
-    const title = document.getElementById('f-title').value.trim();
-    const desc  = document.getElementById('f-desc').value.trim();
-    const author = document.getElementById('f-author').value.trim();
+                    localStorage.setItem('hoa_votes', JSON.stringify(userVotes.value));
+                    
+                    const idea = ideas.value.find(i => i.id === id);
+                    const newUp = Math.max(0, (idea.upvotes || 0) + newUpStep);
+                    const newDown = Math.max(0, (idea.downvotes || 0) + newDownStep);
 
-    if (!title) {
-      toast('Please enter an idea title', 'error');
-      document.getElementById('f-title').focus();
-      return;
-    }
+                    try {
+                        await fetch(`${SUPABASE_URL}/rest/v1/ideas?id=eq.${id}`, {
+                            method: 'PATCH',
+                            headers,
+                            body: JSON.stringify({ upvotes: newUp, downvotes: newDown })
+                        });
+                        idea.upvotes = newUp;
+                        idea.downvotes = newDown;
+                    } catch (err) {
+                        console.error("Vote failed to sync");
+                    }
+                };
 
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span>Posting…</span>';
+                const sortedIdeas = computed(() => {
+                    return [...ideas.value].sort((a, b) => {
+                        if (sortBy.value === 'top') return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes);
+                        if (sortBy.value === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    });
+                });
 
-    try {
-      const newIdea = await insertIdea({
-        title,
-        description: desc || null,
-        author: author || null,
-        upvotes: 1,
-        downvotes: 0
-      });
-      myVotes[newIdea.id] = 'up';
-      saveMyVotes();
-      ideas.push(newIdea);
-      document.getElementById('f-title').value = '';
-      document.getElementById('f-desc').value = '';
-      document.getElementById('f-author').value = '';
-      // Switch to newest to show the new post
-      sort = 'new';
-      document.querySelectorAll('.sort-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.sort === 'new');
-      });
-      render();
-      toast('Your idea has been posted! ✓', 'success');
-    } catch (e) {
-      console.error(e);
-      toast('Could not post: ' + (e.message || 'unknown error'), 'error');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<span>Post Idea</span><span>→</span>';
-    }
-  }
+                const formatDate = (dateStr) => {
+                    return new Date(dateStr).toLocaleDateString(undefined, { 
+                        month: 'short', day: 'numeric', year: 'numeric' 
+                    });
+                };
 
-  // ── Event delegation ─────────────────────────────────────
-  document.getElementById('ideasList').addEventListener('click', e => {
-    const btn = e.target.closest('.vote-btn');
-    if (!btn) return;
-    const card = btn.closest('[data-id]');
-    if (!card) return;
-    handleVote(card.dataset.id, btn.dataset.action);
-  });
+                const getUserVote = (id) => userVotes.value[id] || 0;
 
-  document.getElementById('submitBtn').addEventListener('click', handleSubmit);
+                onMounted(() => {
+                    fetchIdeas();
+                    setInterval(fetchIdeas, 30000);
+                });
 
-  document.querySelectorAll('.sort-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      sort = btn.dataset.sort;
-      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      render();
-    });
-  });
-
-  // ── Auto-refresh every 30s ───────────────────────────────
-  async function refresh() {
-    try {
-      await loadIdeas();
-      render();
-    } catch {}
-  }
-  setInterval(refresh, 30000);
-
-  // ── Init ─────────────────────────────────────────────────
-  (async () => {
-    loadMyVotes();
-    try {
-      await loadIdeas();
-      render();
-    } catch (e) {
-      document.getElementById('ideasList').innerHTML = `
-        <div class="state-msg">
-          <div class="state-icon">⚠️</div>
-          <div class="state-title">Couldn't connect</div>
-          <div class="state-sub">Check that your Supabase table is set up correctly and Row Level Security policies are in place.<br><br><small style="color:#a0aec0">${e.message}</small></div>
-        </div>`;
-      document.getElementById('headerCount').textContent = 'Error';
-    }
-  })();
-</script>
+                return { ideas, loading, submitting, error, sortBy, newIdea, sortedIdeas, postIdea, vote, getUserVote, formatDate };
+            }
+        }).mount('#app');
+    </script>
 </body>
 </html>
