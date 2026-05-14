@@ -16,10 +16,11 @@
         .category-tag { background: #f1ede0; color: #7a7362; font-size: 10px; font-weight: 700; }
         [v-cloak] { display: none; }
         .logo-img { mix-blend-mode: multiply; max-height: 120px; }
-        /* Fix for invisible button and text */
         .btn-submit { background-color: var(--mw-green) !important; color: white !important; }
         .btn-submit:hover { background-color: #0e2a1f !important; }
         .budget-box { background-color: var(--mw-green) !important; color: white !important; }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -39,7 +40,7 @@
         <!-- Main Portal -->
         <div v-else class="max-w-6xl mx-auto px-6 py-12 flex flex-col lg:flex-row gap-12">
             
-            <!-- Left Sidebar -->
+            <!-- Sidebar -->
             <aside class="lg:w-1/3 space-y-8">
                 <div class="sticky top-12">
                     <img src="logo.jpg" alt="Logo" class="logo-img mb-6">
@@ -55,7 +56,6 @@
                         </ul>
                     </div>
 
-                    <!-- Fix: High contrast budget box -->
                     <div class="p-6 budget-box rounded-2xl shadow-lg">
                         <h3 class="font-bold mb-2 text-sm uppercase tracking-wider text-white">Budgeting Context</h3>
                         <p class="text-xs text-white opacity-90 leading-relaxed">
@@ -65,10 +65,18 @@
                 </div>
             </aside>
 
-            <!-- Main Content Area -->
+            <!-- Main Feed -->
             <main class="lg:w-2/3">
-                <section class="bg-white rounded-2xl p-8 mb-12 shadow-xl border-t-4 border-mw-green">
+                <section class="bg-white rounded-2xl p-8 mb-12 shadow-xl border-t-4 border-mw-green relative">
                     <h2 class="text-xl font-bold text-mw-green mb-6">Submit a Proposal</h2>
+                    
+                    <!-- Success Notification -->
+                    <transition name="fade">
+                        <div v-if="showSuccess" class="absolute top-4 right-8 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg text-sm font-bold border border-emerald-200 shadow-sm">
+                            ✓ Idea Posted Successfully
+                        </div>
+                    </transition>
+
                     <form @submit.prevent="postIdea" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <input v-model="newIdea.title" type="text" placeholder="Title" class="px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green shadow-sm" required>
@@ -84,7 +92,6 @@
                         <textarea v-model="newIdea.description" placeholder="Describe your suggestion..." rows="2" class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green shadow-sm"></textarea>
                         <div class="flex flex-col md:flex-row gap-4">
                             <input v-model="newIdea.author" type="text" placeholder="Your Name (Optional)" class="flex-1 px-5 py-3 rounded-xl border border-slate-200 outline-none shadow-sm">
-                            <!-- Fix: Visible button -->
                             <button type="submit" :disabled="submitting" class="btn-submit px-12 py-3 rounded-xl font-bold shadow-md transition-all">
                                 {{ submitting ? 'Posting...' : 'Post Idea' }}
                             </button>
@@ -92,10 +99,8 @@
                     </form>
                 </section>
 
-                <!-- Ideas Feed -->
                 <div class="space-y-6">
                     <div v-for="idea in sortedIdeas" :key="idea.id" class="idea-card p-6 rounded-2xl flex gap-6 relative shadow-sm">
-                        <!-- Voting UI -->
                         <div class="flex flex-col items-center bg-white p-2 rounded-xl border border-slate-100 min-w-[60px] h-fit">
                             <button @click="vote(idea.id, 1)" :class="{ 'vote-active': getUserVote(idea.id) === 1 }" class="opacity-30 hover:opacity-100 transition-all text-mw-green">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/></svg>
@@ -109,8 +114,9 @@
                         <div class="flex-1">
                             <div class="flex flex-wrap gap-2 mb-2">
                                 <span class="category-tag px-2 py-1 rounded-md uppercase tracking-wider">{{ idea.category || 'Others' }}</span>
-                                <span :class="getStatusClass(idea.status)" class="status-badge px-2 py-1 rounded-md border">
-                                    {{ idea.status || 'Under Board Review' }}
+                                <!-- Status Badge: Hidden for non-admins unless it's NOT the default status -->
+                                <span v-if="idea.status && idea.status !== 'Under Board Review'" :class="getStatusClass(idea.status)" class="status-badge px-2 py-1 rounded-md border">
+                                    {{ idea.status }}
                                 </span>
                             </div>
                             <h3 class="text-xl font-bold text-mw-green mb-1">{{ idea.title }}</h3>
@@ -147,6 +153,7 @@
 
                 const ideas = ref([]);
                 const submitting = ref(false);
+                const showSuccess = ref(false);
                 const passInput = ref('');
                 const passError = ref(false);
                 const isAuthenticated = ref(sessionStorage.getItem('mw_auth') === 'true');
@@ -167,6 +174,8 @@
                     submitting.value = true;
                     await fetch(`${SUPABASE_URL}/rest/v1/ideas`, { method: 'POST', headers, body: JSON.stringify(newIdea.value) });
                     newIdea.value = { title: '', description: '', author: '', category: '' };
+                    showSuccess.value = true;
+                    setTimeout(() => showSuccess.value = false, 4000);
                     fetchIdeas();
                     submitting.value = false;
                 };
@@ -215,7 +224,7 @@
                 const getUserVote = (id) => userVotes.value[id] || 0;
 
                 onMounted(() => { if(isAuthenticated.value) fetchIdeas(); setInterval(fetchIdeas, 30000); });
-                return { ideas, submitting, newIdea, sortedIdeas, postIdea, vote, getUserVote, formatDate, isAdmin, isAuthenticated, passInput, passError, checkPass, deleteIdea, statuses, updateStatus, getStatusClass };
+                return { ideas, submitting, newIdea, sortedIdeas, postIdea, vote, getUserVote, formatDate, isAdmin, isAuthenticated, passInput, passError, checkPass, deleteIdea, statuses, updateStatus, getStatusClass, showSuccess };
             }
         }).mount('#app');
     </script>
