@@ -4,52 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Montgomery Woods Community Board</title>
+    <title>MWCA Community Board</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root { --mw-green: #1a3c2e; --mw-cream: #f9f5e8; }
-        body { background: #fdfbf1; font-family: 'Inter', sans-serif; color: #2d3748; }
+        :root { --mw-green: #1a3c2e; --mw-cream: #fdfbf1; }
+        body { background: var(--mw-cream); font-family: 'Inter', sans-serif; color: #2d3748; }
         h1, h2, h3 { font-family: 'Playfair Display', serif; }
         .idea-card { background: #fffcf4; border: 1px solid #e9e2d0; }
         .vote-active { color: var(--mw-green); opacity: 1 !important; transform: scale(1.2); }
         [v-cloak] { display: none; }
-        .logo-img { mix-blend-mode: multiply; max-height: 120px; }
+        .logo-img { mix-blend-mode: multiply; max-height: 140px; }
+        .btn-primary { background-color: var(--mw-green); transition: all 0.2s ease; }
+        .btn-primary:hover { background-color: #0e2a1f; transform: translateY(-1px); }
     </style>
 </head>
-<body class="min-h-screen py-12">
-    <div id="app" v-cloak class="max-w-4xl mx-auto px-6">
+<body class="min-h-screen">
+    <div id="app" v-cloak>
         
-        <!-- Access Gate -->
-        <div v-if="!isAuthenticated" class="flex flex-col items-center justify-center py-20 text-center">
-            <img src="logo.jpg" alt="Montgomery Woods Logo" class="logo-img mb-8">
-            <h2 class="text-2xl font-bold text-mw-green mb-4">Resident Access Required</h2>
-            <p class="mb-6 text-slate-600">Please enter the community access code to continue.</p>
-            <div class="flex gap-2">
-                <input v-model="passInput" type="password" placeholder="Code" class="px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-mw-green">
-                <button @click="checkPass" class="bg-mw-green text-white px-6 py-2 rounded-lg font-bold">Enter</button>
+        <!-- Updated Access Gate -->
+        <div v-if="!isAuthenticated" class="min-h-screen flex flex-col items-center justify-center px-6 py-12 text-center">
+            <div class="bg-white p-10 rounded-3xl shadow-2xl border border-slate-100 max-w-md w-full">
+                <img src="logo.jpg" alt="Montgomery Woods Logo" class="logo-img mx-auto mb-8">
+                <h2 class="text-3xl font-bold text-mw-green mb-4">Resident Access</h2>
+                <p class="mb-8 text-slate-500 text-sm leading-relaxed">Please enter the community access code provided in the HOA newsletter to view the board.</p>
+                
+                <div class="space-y-4">
+                    <input v-model="passInput" 
+                           @keyup.enter="checkPass"
+                           type="password" 
+                           placeholder="Access Code" 
+                           class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green text-center text-lg tracking-widest">
+                    
+                    <button @click="checkPass" 
+                            class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg">
+                        Enter Portal
+                    </button>
+                </div>
+                
+                <p v-if="passError" class="text-red-600 mt-6 text-sm font-bold animate-pulse">Invalid access code. Please try again.</p>
             </div>
-            <p v-if="passError" class="text-red-500 mt-4 text-sm font-bold">Invalid Code</p>
+            <p class="mt-8 text-slate-400 text-xs uppercase tracking-widest">Montgomery Woods Community Association</p>
         </div>
 
         <!-- Main Content -->
-        <div v-else>
+        <div v-else class="max-w-4xl mx-auto px-6 py-12">
             <header class="flex flex-col items-center mb-12 text-center">
                 <img src="logo.jpg" alt="Montgomery Woods Logo" class="logo-img mb-6">
                 <h1 class="text-4xl text-mw-green mb-2">Community Ideas Board</h1>
-                <p class="text-slate-600 italic">A private space for Princeton residents to shape our neighborhood</p>
-                <div v-if="isAdmin" class="mt-4 bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Board Member / Admin Mode</div>
+                <p class="text-slate-600 italic">A private space for residents to shape our neighborhood</p>
+                <div v-if="isAdmin" class="mt-4 bg-amber-100 text-amber-800 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border border-amber-200">Board Member / Admin Mode</div>
             </header>
 
             <!-- Submit Form -->
             <section class="bg-white rounded-2xl p-8 mb-12 shadow-xl border-t-4 border-mw-green">
                 <h2 class="text-2xl font-bold text-mw-green mb-6">Submit a Proposal</h2>
                 <form @submit.prevent="postIdea" class="space-y-4">
-                    <input v-model="newIdea.title" type="text" placeholder="Idea Title" class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green" required>
-                    <textarea v-model="newIdea.description" placeholder="Describe your suggestion..." rows="2" class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green"></textarea>
+                    <input v-model="newIdea.title" type="text" placeholder="Idea Title (e.g., Tennis Court Resurfacing)" class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green shadow-sm" required>
+                    <textarea v-model="newIdea.description" placeholder="Describe your suggestion and its benefits..." rows="3" class="w-full px-5 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-mw-green shadow-sm"></textarea>
                     <div class="flex flex-col md:flex-row gap-4">
-                        <input v-model="newIdea.author" type="text" placeholder="Your Name (Optional)" class="flex-1 px-5 py-3 rounded-xl border border-slate-200 outline-none">
-                        <button type="submit" :disabled="submitting" class="bg-mw-green text-white font-bold px-10 py-3 rounded-xl hover:bg-emerald-900 transition-all shadow-md">
+                        <input v-model="newIdea.author" type="text" placeholder="Your Name (Optional)" class="flex-1 px-5 py-3 rounded-xl border border-slate-200 outline-none shadow-sm">
+                        <button type="submit" :disabled="submitting" class="btn-primary text-white font-bold px-12 py-3 rounded-xl transition-all shadow-md">
                             {{ submitting ? 'Submitting...' : 'Post Idea' }}
                         </button>
                     </div>
@@ -59,19 +74,19 @@
             <!-- Feed -->
             <div class="grid gap-6">
                 <div v-for="idea in sortedIdeas" :key="idea.id" class="idea-card p-6 rounded-2xl flex gap-6 items-center relative shadow-sm">
-                    <div class="flex flex-col items-center bg-white p-2 rounded-xl border border-slate-100 min-w-[60px]">
-                        <button @click="vote(idea.id, 1)" :class="{ 'vote-active': getUserVote(idea.id) === 1 }" class="opacity-40 hover:opacity-100 transition-all">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/></svg>
+                    <div class="flex flex-col items-center bg-white p-2 rounded-xl border border-slate-100 min-w-[65px] shadow-inner">
+                        <button @click="vote(idea.id, 1)" :class="{ 'vote-active': getUserVote(idea.id) === 1 }" class="opacity-30 hover:opacity-100 transition-all">
+                            <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/></svg>
                         </button>
                         <span class="text-xl font-bold text-mw-green">{{ idea.upvotes - idea.downvotes }}</span>
-                        <button @click="vote(idea.id, -1)" :class="{ 'vote-active': getUserVote(idea.id) === -1 }" class="opacity-40 hover:opacity-100 transition-all">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+                        <button @click="vote(idea.id, -1)" :class="{ 'vote-active': getUserVote(idea.id) === -1 }" class="opacity-30 hover:opacity-100 transition-all">
+                            <svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
                         </button>
                     </div>
 
                     <div class="flex-1">
-                        <h3 class="text-xl font-bold text-mw-green">{{ idea.title }}</h3>
-                        <p class="text-slate-600 text-sm mb-2 leading-relaxed">{{ idea.description }}</p>
+                        <h3 class="text-xl font-bold text-mw-green mb-1">{{ idea.title }}</h3>
+                        <p class="text-slate-600 text-sm mb-3 leading-relaxed">{{ idea.description }}</p>
                         <div class="text-[10px] uppercase font-bold tracking-widest text-slate-400">
                             {{ idea.author || 'Anonymous Resident' }} • {{ formatDate(idea.created_at) }}
                         </div>
@@ -92,7 +107,7 @@
             setup() {
                 const SUPABASE_URL = 'https://sizisveskynuftyclzgb.supabase.co';
                 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpemlzdmVza3ludWZ0eWNsemdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTU0MzIsImV4cCI6MjA5MzkzMTQzMn0.v4eeorP97VcJP_GOizGdyoCJBRTVK4b06wJ7EEM1oFg';
-                const ACCESS_CODE = '08540'; // <--- CHANGE YOUR RESIDENT CODE HERE
+                const ACCESS_CODE = '08540'; 
 
                 const ideas = ref([]);
                 const submitting = ref(false);
@@ -109,15 +124,19 @@
                     if (passInput.value === ACCESS_CODE) {
                         isAuthenticated.value = true;
                         sessionStorage.setItem('mw_auth', 'true');
+                        fetchIdeas();
                     } else {
                         passError.value = true;
+                        passInput.value = '';
                     }
                 };
 
                 const fetchIdeas = async () => {
                     if (!isAuthenticated.value) return;
-                    const res = await fetch(`${SUPABASE_URL}/rest/v1/ideas?select=*`, { headers });
-                    ideas.value = await res.json();
+                    try {
+                        const res = await fetch(`${SUPABASE_URL}/rest/v1/ideas?select=*`, { headers });
+                        ideas.value = await res.json();
+                    } catch (e) { console.error("Fetch error"); }
                 };
 
                 const postIdea = async () => {
